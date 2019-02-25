@@ -1,0 +1,30 @@
+{% extends 'message_base.html' %}
+{% load staticfiles %}
+{% load blog_tags %}
+
+{% block title %}
+{{ name }}|念旧博客
+{% endblock %}
+
+{% block tags %}标签云{% endblock %}
+
+{% block extends_message %}
+    <article class="archives">
+        {% for tag in tags %}
+        <div class="item">
+            <h3><a href="{% url 'tag' tag.name %}" style="color: #F15A23" target="_blank">{{ tag.name }}</a></h3>
+            <ul class="archives-list">
+                {% get_blogs_by_tag tag.id as blogs %}
+                {% for blog in blogs %}
+                <li>
+                    <a href="{% url 'blog_detail' blog.id %}" target="_blank">{{ blog.title }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </article>
+{% endblock %}
+
+{% block messages %}
+{% endblock %}

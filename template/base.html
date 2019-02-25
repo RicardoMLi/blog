@@ -1,0 +1,125 @@
+{% load  staticfiles %}
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=10,IE=9,IE=8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
+<title>{% block title %}{% endblock %}</title>
+<script>
+window._deel = {name: '念旧博客',url: 'http://localhost:8000', ajaxpager: '', commenton: 0, roll: [3,5],appkey: {tqq: '449273863',tsina: '3036462609'}}
+</script>
+
+<link rel='dns-prefetch' href='//libs.baidu.com' />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+{% block custom_css %}
+{% endblock %}
+<script type='text/javascript' src='//libs.baidu.com/jquery/1.8.3/jquery.min.js?ver=1.0'></script>
+<script type='text/javascript' src='{% static 'js/jquery.js' %}'></script>
+<script type='text/javascript' src='{% static 'js/common.js' %}'></script>
+<script type='text/javascript' src='{% static 'js/wp-embed.min.js' %}'></script>
+{% block custom_js %}
+{% endblock %}
+<!--[if lt IE 9]><script src=”http://html5shiv.googlecode.com/svn/trunk/html5.js”></script></script><script src="{% static 'js/selectivizr-min.js' %}"></script><![endif]-->
+<!--[if lte IE 8]> <![endif]-->
+<script src="{% static 'js/selectivizr-min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+        var arr = window.location.href.split('/');
+        var href1 = arr[arr.length - 2];
+        var href2 = arr[arr.length - 3];
+        var parent_categorys = $('.parent_category');
+        $.each(parent_categorys, function (index, item) {
+            if(href1 === $(item).attr('category_link') || href2 === $(item).attr('category_link'))
+                $(item).addClass('current-menu-item');
+            var child_categorys = $(item).children('ul').children('li')
+            if(child_categorys.length != 0){
+                $.each(child_categorys, function (child_index, child_item) {
+                    if($(child_item).attr('category_link') === href1)
+                        $(child_item).addClass('current-menu-item');
+                })
+            }
+        })
+    });
+</script>
+</head>
+<body class="home blog">
+{% block header %}
+<header id="header" class="header">
+    <div class="container-inner">
+       <div class="yusi-logo">
+           <a href="{% url 'index' %}">
+               <h1>
+                   <span class="yusi-mono">念旧博客</span>
+                   <span class="yusi-bloger">&#8211; 不畏将来，不念过往！</span>
+               </h1>
+           </a>
+       </div>
+    </div>
+    <div id="nav-header" class="navbar">
+        <ul class="nav">
+            <li id="menu-item" class="menu-item menu-item-type-custom menu-item-object-custom {% if request.path == '/' %} current-menu-item current_page_item {% endif %} menu-item">
+                <a href="/">首页</a>
+            </li>
+            {% for parent_category in parent_categories %}
+            <li id="menu-item" class="parent_category menu-item menu-item-type-taxonomy menu-item-object-category {% if parent_category.has_child %} menu-item-has-children {% endif %} menu-item" category_link="{{ parent_category.link }}">
+                <a href="/category/{{ parent_category.link }}/">{{ parent_category.name }}</a>
+                {% if parent_category.has_child %}
+                    <ul class="sub-menu">
+                    {% for child_category in parent_category.get_child_set %}
+                        <li id="menu-item" class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item" category_link="{{ child_category.link }}"><a href="/category/{{ parent_category.link }}/{{ child_category.link }}">{{ child_category.name }}</a></li>
+                    {% empty %}
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+            </li>
+            {% endfor %}
+            <li style="float:right;">
+                <div class="toggle-search">
+                    <i class="fa fa-search"></i>
+                </div>
+            <div class="search-expand" style="display: none;">
+                <div class="search-expand-inner">
+                    <form method="get" class="searchform themeform" action="/search/" target="_blank">
+                        <div>
+                            <input type="text" class="search" name="q" onblur="if(this.value=='')this.value='search...';" onfocus="if(this.value=='search...')this.value='';" value="search...">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </li>
+        </ul>
+    </div>
+</header>
+{% endblock %}
+
+{% block content%}
+{% endblock %}
+
+{% block footer %}
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="copyright pull-left">
+            <a href="{% url 'index' %}" title="念旧博客">念旧博客</a> 版权所有，保留一切权利 !   ·    <a href="#" title="站点地图">站点地图</a>   © 2018-2020 ·  <a href="http://www.miitbeian.gov.cn/" rel="nofollow" target="_blank" >粤ICP备xxxxxx号</a>   ·   托管于 <a rel="nofollow" target="_blank" href="https://promotion.aliyun.com/ntms/yunparter/invite.html">阿里云</a> & <a rel="nofollow" target="_blank" href="https://www.qiniu.com/">七牛</a>
+        </div>
+        <div class="trackcode pull-right">
+{#            <script src="https://s23.cnzz.com/z_stat.php?id=4687699&web_id=4687699" language="JavaScript">#}
+{#            </script>#}
+
+{#            <script>#}
+{#            var _hmt = _hmt || [];#}
+{#            (function() {#}
+{#              var hm = document.createElement("script");#}
+{#              hm.src = "//hm.baidu.com/hm.js?b52ad73b0742bc99858449915680c213";#}
+{#              var s = document.getElementsByTagName("script")[0];#}
+{#              s.parentNode.insertBefore(hm, s);#}
+{#            })();#}
+{#            </script>#}
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+</body>
+</html>

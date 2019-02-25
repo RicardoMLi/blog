@@ -1,0 +1,299 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block custom_css %}
+<link rel="stylesheet" href="http://at.alicdn.com/t/font_965300_a0nz8ledz0v.css">
+{% endblock %}
+
+{% block title %}
+{{ name }}|念旧博客
+{% endblock %}
+
+{% block content %}
+<section class="container">
+    <div class="speedbar">
+        <div class="toptip">
+            <strong class="text-success">
+                <i class="fa fa-volume-up"></i>
+            </strong> 本网站提供互联网编程技术交流和分享，部分博客教程不断更新中......
+            {% if not request.user.is_authenticated %}
+                <i class="iconfont icon-zhuce" style="float: right">
+                    <a href="{% url 'register' %}">注册</a>
+                </i>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <i class="iconfont icon-denglu" style="float: right;margin-right: 10px">
+                    <a href="{% url 'login' %}">登录</a>
+                </i>
+            {% else %}
+                <i class="iconfont icon-zhuxiao" style="float: right;">
+                    <a href="{% url 'logout' %}?from={{ request.get_full_path }}">&nbsp;&nbsp;&nbsp;注销</a>
+                </i>
+                &nbsp;&nbsp;&nbsp;
+                <span style="float: right;margin-right: 10px">欢迎您，{{ request.user.username }}  </span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="content-wrap">
+        <div class="content">
+            {% block banner_img %}
+            <div id="wowslider-container1">
+                <div class="ws_images">
+                    <ul>
+                        {% for banner in banners %}
+                        <li>
+                            <a target="_blank" href="{% url 'blog_detail' banner.blog.id %}" title="{{ banner.blog.title }}">
+                                <img src="{{ MEDIA_URL }}{{ banner.image }}" title="{{ banner.blog.title }}" alt="{{ banner.blog.title }}"  />
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="ws_thumbs">
+                    <div>
+                        {% for banner in banners %}
+                        <a target="_blank" href="{% url 'blog_detail' banner.blog.id %}" title="{{ banner.blog.title }}">
+                            <img src="{{ MEDIA_URL }}{{ banner.image }}" style="width: 120px;height: 62px"/>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            <div class="ws_shadow"></div>
+            </div>
+            <script type="text/javascript" src="{% static 'js/slider.js' %}"></script>
+            <div class="banner banner-sticky"></div>
+            <div class="hot-posts">
+                <h2 class="title">热门排行</h2>
+                <ul>
+                    {% for hot_blog in hot_blogs %}
+                    <li>
+                        <p>
+                            <span class="post-comments">评论 ({{ hot_blog.get_comments_num }})</span>
+                            <span class="muted"><a href="javascript:;" data-action="ding" data-id="3918" id="Addlike" class="action">
+                                <i class="fa fa-heart-o"></i><span class="count">{{ hot_blog.like_num }}</span>喜欢</a>
+                            </span>
+                        </p>
+                        <span class="label label-1">{{ forloop.counter }}</span>
+                        <a target="_blank" href="{% url 'blog_detail' hot_blog.id %}" title="{{ hot_blog.title }}">{{ hot_blog.title }}</a>
+                    </li>
+                    {% empty %}
+                    <li>暂无热门博客</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endblock %}
+
+            {% block custom_bread %}
+            {% endblock %}
+
+            {% block articles %}
+            {% for blog in blogs.object_list %}
+                <article class="excerpt">
+                    <header>
+                        <a class="label label-important" href="javascript:void(0)" onclick="goto_category({{ blog.category.id }},false)">{{ blog.category.name }}
+                            <i class="label-arrow"></i>
+                        </a>
+                        <h2>
+                            <a target="_blank" href="{% url 'blog_detail' blog.id %}" title="{{ blog.title }}">{{ blog.title }}</a>
+                        </h2>
+                    </header>
+                    <div class="focus">
+                        <a target="_blank" href="{% url 'blog_detail' blog.id %}">
+                            <img class="thumb" src="{{ MEDIA_URL }}{{ blog.image }}" alt="{{ blog.title }}" />
+                        </a>
+                    </div>
+                    <span class="note"> {{ blog.content|cut:'&nbsp;'|cut:'&ldquo;'|cut:'&rdquo;'|cut:'&gt;'|cut:'&lt;'|cut:'&mdash;'|striptags|truncatechars:200 }}...</span>
+                    <p class="auth-span">
+                        <span class="muted">
+                            <i class="fa fa-clock-o"></i> {{ blog.created_time|date:'Y-m-d' }}
+                        </span>
+                        <span class="muted">
+                            <i class="fa fa-eye"></i> {{ blog.click_num }}℃
+                        </span>
+                        <span class="muted">
+                            <i class="fa fa-comments-o"></i>
+                            <a target="_blank" href="{% url 'blog_detail' blog.id %}#comments">{{ blog.get_comments_num }}评论</a>
+                        </span>
+                        <span class="muted">
+                            <a href="javascript:;" data-action="ding" data-id="{{ blog.id }}" id="Addlike" class="action">
+                                <i class="fa fa-heart-o"></i><span class="count">{{ blog.like_num }}</span>喜欢</a>
+                        </span>
+                    </p>
+                </article>
+            {% endfor %}
+
+            {% if blogs.object_list %}
+            <div class="pagination">
+                <ul>
+                    {% if blogs.has_previous %}
+                        <li class="prev-page">
+                            <a href="?{{ blogs.previous_page_number.querystring }}">上一页</a>
+                        </li>
+                    {% endif %}
+
+                    {% for page in blogs.pages %}
+                        {% if page %}
+                            {% ifequal page blogs.number %}
+                                <li class="active">
+                                    <span>{{ page }}</span>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <span><a href="?{{ page.querystring }}">{{ page }}</a></span>
+                                </li>
+                            {% endifequal %}
+                        {% else %}
+                            <li>
+                                <span> ... </span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if blogs.has_next %}
+                    <li class="next-page">
+                        <a href="?{{ blogs.next_page_number.querystring }}" >下一页</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+            {% endif %}
+
+            {% endblock %}
+        </div>
+    </div>
+    <aside class="sidebar">
+        <div class="widget widget_text">
+            <div class="textwidget">
+                <div class="social">
+                    <a href="https://weibo.com/6428411042/profile" rel="external nofollow" title="新浪微博" target="_blank">
+                        <i class="sinaweibo fa fa-weibo"></i></a>
+                    <a href="http://t.qq.com/chongchong7159" rel="external nofollow" title="腾讯微博" target="_blank">
+                        <i class="tencentweibo fa fa-tencent-weibo"></i>
+                    </a>
+                    <a class="weixin">
+                        <i class="weixins fa fa-weixin"></i>
+                        <div class="weixin-popover">
+                            <div class="popover bottom in">
+                                <div class="arrow"></div>
+                                <div class="popover-title">微信号“旧”</div>
+                                <div class="popover-content">
+                                    <img src="{% static 'img/微信.jpg' %}">
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    <a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=449273863@qq.com" rel="external nofollow" title="Email" target="_blank">
+                        <i class="email fa fa-envelope-o"></i>
+                    </a>
+                    <a href="http://wpa.qq.com/msgrd?v=3&uin=508477625&site=qq&menu=yes" rel="external nofollow" title="联系QQ" target="_blank">
+                        <i class="qq fa fa-qq"></i>
+                    </a>
+                    <a href="#" rel="external nofollow" target="_blank"  title="订阅本站">
+                        <i class="rss fa fa-rss"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+{#        <div class="widget d_textbanner">#}
+{#            <a class="style01" href="https://yusi123.com/3233.html">#}
+{#                <div class="title">#}
+{#                    <h2>免费下载</h2>#}
+{#                </div>#}
+{#                <h3>本站主题：Yusi1.0(扁平化+响应式)</h3>#}
+{#                <p>支持 WordPress 3.8 及以上最新版，兼容 IE9+、Chrome、Firefox 等主流浏览器！</p>#}
+{#            </a>#}
+{#        </div>#}
+        <div class="widget d_tag">
+                <div class="title"><h2>日期归档</h2></div>
+                <div class="d_tags">
+                    {% for blog_date, blog_count in blog_dates.items %}
+                        <a href="{% url 'get_blogs_with_date' blog_date.year blog_date.month %}">{{ blog_date.year}}年{{ blog_date.month }}月 ({{ blog_count }})</a>
+                    {% endfor %}
+                </div>
+            </a>
+        </div>
+        <div class="widget d_tag">
+            <div class="title"><h2>标签云</h2></div>
+            <div class="d_tags">
+                {% for tag in tags %}
+                <a title="{{ tag.get_tag_blog }}个话题" href="{% url 'tag' tag.name %}">{{ tag.name }} ({{ tag.get_tag_blog }})</a>
+                {% empty %}
+                <span>暂无标签</span>
+                {% endfor %}
+            </div>
+        </div>
+        <div class="widget d_postlist">
+            <div class="title">
+                <h2>最近浏览</h2>
+            </div>
+            <ul>
+                {% for current_click_blog in current_click_blogs %}
+                    <li>
+                        <a href="{% url 'blog_detail' current_click_blog.id %}" title="{{ current_click_blog.title }}" >
+                            <span class="thumbnail">
+                                <img src="{{ MEDIA_URL }}{{ current_click_blog.image }}" alt="{{ current_click_blog.title }}" height="64" width="100" />
+                            </span>
+                            <span class="text">{{ current_click_blog.title }}</span>
+                            <span class="muted">{{ current_click_blog.created_time|date:'Y-m-d' }}</span>
+                            <span class="muted" style="float: right;">{{ current_click_blog.get_comments_num }}评论</span>
+                        </a>
+                    </li>
+                {% empty %}
+                <li>暂无最近浏览</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="widget d_postlist">
+            <div class="title">
+                <h2>猜你喜欢</h2>
+            </div>
+            <ul>
+                {% for liked_blog in liked_blogs %}
+                <li>
+                    <a href="{% url 'blog_detail' liked_blog.id %}" title="{{ liked_blog.title }}" >
+                        <span class="thumbnail">
+                            <img src="{{ MEDIA_URL }}{{ liked_blog.image }}" alt="{{ liked_blog.title }}" height="64" width="100"/>
+                        </span>
+                        <span class="text">{{ liked_blog.title }}</span>
+                        <span class="muted">{{ liked_blog.created_time|date:'Y-m-d' }}</span>
+                        <span class="muted" style="float: right;">{{ liked_blog.get_comments_num }}评论</span>
+                    </a>
+                </li>
+                {% empty %}
+                <li>暂无喜欢的博客</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="widget d_comment">
+            <div class="title">
+                <h2>最新留言</h2>
+            </div>
+            <ul>
+                {% for lastest_comment in lastest_comments %}
+                <li>
+                    <a href="{% url 'blog_detail' lastest_comment.blog.id %}#message_{{ lastest_comment.id }}" title="{{ lastest_comment.blog.title }}上的评论">
+                        <img src='{% static "img/default.png" %}'  class='avatar avatar-48 photo' height='48' width='48' />
+                        <div class="muted">
+                            <i>{{ lastest_comment.user.username }}&nbsp;&nbsp;</i>{{ lastest_comment.created_time|date:'m-d' }}&nbsp;&nbsp;说：{{ lastest_comment.content }}
+                        </div>
+                    </a>
+                </li>
+                {% empty %}
+                <li>暂无留言</li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="widget widget_links">
+            <div class="title">
+                <h2>友情链接</h2>
+            </div>
+            <ul class='xoxo blogroll'>
+                {% for link in links %}
+                <li>
+                    <a href="{{ link.link }}" target="_blank">{{ link.name }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </aside>
+</section>
+{% endblock %}

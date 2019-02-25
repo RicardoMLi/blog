@@ -1,0 +1,18 @@
+{% extends 'message_base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+{{ name }}|念旧博客
+{% endblock %}
+
+{% block tags %}留言板{% endblock %}
+
+{% block extends_message %}
+    <div class="article-content">
+        {% for notice in notices %}
+            <p style="margin-left: 50px">
+                <strong>{{ forloop.counter }}.{{ notice.content }}</strong>
+            </p>
+        {% endfor %}
+    </div>
+{% endblock %}

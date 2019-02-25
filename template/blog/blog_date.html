@@ -1,0 +1,39 @@
+{% extends 'message_base.html' %}
+{% load staticfiles %}
+{% load blog_tags %}
+
+{% block title %}
+{{ name }}|念旧博客
+{% endblock %}
+
+{% block tags %}历史文章{% endblock %}
+
+{% block extends_message %}
+    <article class="archives">
+        {% for blog_date in blog_dates %}
+        <div class="item">
+            <h3>{{ blog_date.year }}年{{ blog_date.month }}月</h3>
+            <ul class="archives-list">
+                {% get_blogs_by_year_and_month blog_date as blogs %}
+                {% for day,day_blogs in blogs.items %}
+                <li>
+                    <time>{{ day }}日</time>
+                    <ul>
+                       {% for day_blog in day_blogs %}
+                       <span class="muted"></span>
+                       <span class="muted"></span>
+                       <a href="{% url 'blog_detail' day_blog.id %}" target="_blank">{{ forloop.counter }}. {{ day_blog.title }}</a>
+                       <br>
+                       {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </article>
+{% endblock %}
+
+
+{% block messages %}
+{% endblock %}

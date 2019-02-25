@@ -1,0 +1,75 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block title %}
+搜索|念旧博客
+{% endblock %}
+
+{% block banner_img %}
+{% endblock %}
+
+
+{% block custom_bread %}
+    <header class="archive-header">
+        <h1><i class="iconfont icon-wenjianjia"></i>   搜索结果如下：</h1>
+    </header>
+    <div class="banner banner-sticky"></div>
+{% endblock %}
+
+{% block articles %}
+{% if query %}
+    {% for result in page.object_list %}
+        <article class="excerpt">
+        <header>
+            <a class="label label-important" href="javascript:void(0)">{{ result.object.category.name }}
+                <i class="label-arrow"></i>
+            </a>
+            <h2>
+                <a target="_blank" href="{% url 'blog_detail' result.object.id %}" title="{{ result.object.title }}">{{ result.object.title }}</a>
+            </h2>
+        </header>
+        <div class="focus">
+            <a target="_blank" href="{% url 'blog_detail' result.object.id %}">
+                <img class="thumb" src="{{ MEDIA_URL }}{{ result.object.image }}" alt="{{ result.object.title }}" />
+            </a>
+        </div>
+        <span class="note"> {{ result.object.content|cut:'&nbsp;'|cut:'&ldquo;'|cut:'&rdquo;'|striptags|truncatechars:200 }}...</span>
+        <p class="auth-span">
+            <span class="muted">
+                <i class="fa fa-clock-o"></i> {{ result.object.created_time }}
+            </span>
+            <span class="muted">
+                <i class="fa fa-eye"></i> {{ result.object.click_num }}℃
+            </span>
+            <span class="muted">
+                <i class="fa fa-comments-o"></i>
+                <a target="_blank" href="{% url 'blog_detail' result.object.id %}#comments">{{ result.object.get_comments_num }}评论</a>
+            </span>
+            <span class="muted">
+                <a href="javascript:;" data-action="ding" data-id="{{ result.object.id }}" id="Addlike" class="action">
+                    <i class="fa fa-heart-o"></i><span class="count">{{ result.object.like_num }}</span>喜欢</a>
+            </span>
+        </p>
+    </article>
+    {% empty %}
+    {% endfor %}
+
+    {% if page.has_previous or page.has_next %}
+        <div class="pagination">
+        <ul>
+            {% if page.has_previous %}
+                <li class="prev-page">
+                    <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">上一页</a>
+                </li>
+            {% endif %}
+
+            {% if page.has_next %}
+            <li class="next-page">
+                <a href="?q={{ query }}&amp;page={{ page.next_page_number }}" >下一页</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+{% endif %}
+{% endblock %}

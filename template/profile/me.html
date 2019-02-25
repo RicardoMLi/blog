@@ -1,0 +1,36 @@
+{% extends 'message_base.html' %}
+{% load staticfiles %}
+
+{% block title %}
+{{ name }}|念旧博客
+{% endblock %}
+
+{% block tags %}关于念旧{% endblock %}
+
+{% block extends_message %}
+    <div class="article-content" style="margin-bottom: 100px">
+        <h2 style="text-align: center">个人简介</h2>
+        <p style="text-align: center">
+            <img src="{% static 'img/me.jpg' %}" alt="me" style="border-radius: 50%" height="100px" width="100px">
+        </p>
+        <p style="text-align: center">李泽煜</p>
+        <p style="text-align: center">爱生活，爱运动，爱动漫，爱编程</p>
+        <p style="text-align: center">人生若只如初见，何事秋风悲画扇。等闲变却故人心，却道故人心易变。</p>
+        <h2 style="text-align: center">我的技能</h2>
+        <section class="myskills">
+            {% for skill in skills %}
+            <div class="skill">
+                <div class="describe">{{ skill.name }}</div>
+                <div class="process">
+                    <span style="width: {{ skill.master_rate }}%;background: #00bdbd">
+                        <span>{{ skill.master_rate }}%</span>
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+    </div>
+{% endblock %}
+
+{% block messages %}
+{% endblock %}

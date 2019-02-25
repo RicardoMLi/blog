@@ -1,0 +1,43 @@
+{% extends 'message_base.html' %}
+{% load staticfiles %}
+{% load link_tags %}
+
+{% block title %}
+{{ name }}|念旧博客
+{% endblock %}
+
+{% block tags %}友情链接{% endblock %}
+
+{% block extends_message %}
+    <article class="article-content">
+        <h3 style="color: #ff0000; margin-left: 50px">如果您想要本站添加友链，请先加上本站链接后再留言发送贵站地址。站长会在24小时内主动加上贵站友链并回复</h3>
+        <h3 style="color: #ff0000; margin-left: 50px">友链要求：最好是技术性网站，内容正规且持续更新</h3>
+        <hr>
+    </article>
+    <article class="archives">
+        {% for link_date in link_dates %}
+        <div class="item">
+            <h3>{{ link_date.year }}年{{ link_date.month }}月</h3>
+            <ul class="archives-list">
+                {% get_links_by_year_and_month link_date as links %}
+                {% for day,day_links in links.items %}
+                <li>
+                    <time>{{ day }}日</time>
+                    <ul>
+                       {% for day_link in day_links %}
+                       <span class="muted"></span>
+                       <span class="muted"></span>
+                       <a href="{{ day_link.link }}" target="_blank">{{ day_link.name }}</a>
+                       <br>
+                       {% endfor %}
+                    </ul>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </article>
+{% endblock %}
+
+{% block messages %}
+{% endblock %}

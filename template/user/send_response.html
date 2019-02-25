@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+     <script type="text/javascript" src="{% static 'js/jquery.min.js' %}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            if($("#return_title").text() != "邮件已发送,请查收^_^"){
+                var time_limit = 5;
+                //将按钮变成灰色
+                $("#return_title").text('{{ title }}' + time_limit + 's后返回登录页面');
+                var interval = setInterval(() => {
+                    if (time_limit <= 0){
+                        clearInterval(interval);
+                        window.location.href = '/user/login/';
+                    }
+                    time_limit--;
+                    $("#return_title").text("{{ title }}" + time_limit + 's后返回登录页面');
+                },1000);
+            }
+        });
+    </script>
+</head>
+<body>
+ <h1 id="return_title">{{ title }}</h1>
+</body>
+</html>

@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block custom_css %}
+    <link rel="stylesheet" href="{% static 'css/share.css' %}">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_965300_a0nz8ledz0v.css">
+{% endblock %}
+
+{% block content%}
+<section class="container">
+    <div class="speedbar">
+        <div class="toptip">
+            <strong class="text-success">
+                <i class="fa fa-volume-up"></i>
+            </strong> 本网站提供互联网编程技术交流和分享，部分博客教程不断更新中......
+            {% if not request.user.is_authenticated %}
+                <i class="iconfont icon-zhuce" style="float: right">
+                    <a href="{% url 'register' %}">注册</a>
+                </i>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <i class="iconfont icon-denglu" style="float: right;margin-right: 10px">
+                    <a href="{% url 'login' %}">登录</a>
+                </i>
+            {% else %}
+                <i class="iconfont icon-zhuxiao" style="float: right;">
+                    <a href="{% url 'logout' %}?from={{ request.get_full_path }}">&nbsp;&nbsp;&nbsp;注销</a>
+                </i>
+                &nbsp;&nbsp;&nbsp;
+                <span style="float: right;margin-right: 10px">欢迎您，{{ request.user.username }}  </span>
+            {% endif %}
+        </div>
+    </div>
+    <div class="pagewrapper clearfix">
+        <aside class="pagesidebar">
+            <ul class="pagesider-menu">
+                <li id="menu-item-3403" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/profile/' %}current-menu-item{% endif %} menu-item-3403"><a href="{% url 'about' %}">关于念旧</a></li>
+                <li id="menu-item-3403" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/blog/all_tags/' %}current-menu-item{% endif %} menu-item-3403"><a href="{% url 'all_tags' %}">标签云</a></li>
+                <li id="menu-item-3406" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/link/' %}current-menu-item{% endif %} menu-item-3406"><a href="{% url 'link' %}">友情链接</a></li>
+                <li id="menu-item-3407" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/blog/history/' %}current-menu-item{% endif %} menu-item-3407"><a href="{% url 'history' %}">历史文章</a></li>
+                <li id="menu-item-3414" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/donate/' %}current-menu-item{% endif %} menu-item-3414"><a href="{% url 'donate' %}">捐赠本站</a></li>
+                <li id="menu-item-3410" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/category/message/' %}current-menu-item{% endif %} menu-item-3410"><a href="{% url 'message' %}">留言板</a></li>
+            </ul>
+        </aside>
+        <div class="pagecontent">
+            <header class="pageheader clearfix">
+                <h1 class="pull-left">
+                    <span>{% block tags %}{% endblock %}</span>
+                </h1>
+                <div class="pull-right"><!-- 百度分享 -->
+                    <span class="action action-share bdsharebuttonbox">
+                        <i class="fa fa-share-alt"></i>分享 (
+                        <span class="bds_count" data-cmd="count" title="累计分享次">0</span> )
+                        <div class="action-popover">
+                            <div class="popover top in">
+                                <div class="arrow"></div>
+                                <div class="popover-content">
+                                    <a href="javascript:void(0)" class="sinaweibo fa fa-weibo" data-cmd="tsina" title="分享到新浪微博" onclick="share_at_message(1)"></a>
+                                    <a href="javascript:void(0)" class="bds_qzone fa fa-star" data-cmd="qzone" title="分享到QQ空间" onclick="share_at_message(2)"></a>
+                                    <a href="javascript:void(0)" class="tencentweibo fa fa-tencent-weibo" data-cmd="tqq" title="分享到腾讯微博" onclick="share_at_message(3)"></a>
+                                    <a href="javascript:void(0)" class="qq fa fa-qq" data-cmd="sqq" title="分享到QQ好友" onclick="share_at_message(4)"></a>
+                                    <a href="javascript:void(0)" class="bds_renren fa fa-renren" data-cmd="renren" title="分享到人人网" onclick="share_at_message(5)"></a>
+                                    <a href="javascript:void(0)" class="bds_weixin fa fa-weixin" data-cmd="weixin" title="分享到微信" onclick="share_at_message(6)"></a>
+                                </div>
+                            </div>
+                        </div>
+                    </span>
+                </div>
+            </header>
+            {% block extends_message %}
+            {% endblock %}
+{#            下面留言板块#}
+            {% block messages %}
+            <div id="respond" class="no_webshot">
+                <form action="" method="POST" id="messageform" onsubmit="return false">
+                    {% csrf_token %}
+                    <div class="comt-title">
+                        <div class="comt-avatar pull-left">
+                            <img alt='默认头像'  src='{% static 'img/default.png' %}' class='avatar avatar-28 photo avatar-default' height='28' width='28' />
+                        </div>
+                        <div class="comt-author pull-left">发表我的评论</div>
+                        <a id="cancel-comment-reply-link" class="pull-right" href="javascript:;">取消评论</a>
+                    </div>
+
+                    <div class="comt">
+                        <div class="comt-box">
+                            {% if request.user.is_authenticated %}
+                            <textarea placeholder="写点什么..." class="input-block-level comt-area" name="comment" id="comment" cols="100%" rows="3" tabindex="1" onkeydown=""></textarea>
+                            <div class="comt-ctrl">
+                                <button class="btn btn-primary pull-right" type="button" id="submit" tabindex="5" onclick="addMessage({{ request.user.id }})">
+                                    <i class="icon-ok-circle icon-white icon12"></i> 提交评论
+                                </button>
+                                <div class="comt-tips pull-right">
+                                    <input type='hidden' name='current_user_id' id='current_user_id' value="{{ request.user.id }}" />
+                                    <input type='hidden' name='to_user_id' id='to_user_id'/>
+                                    <input type="hidden" name="to_message_id" id="message_id" >
+                                </div>
+                            </div>
+                            {% else %}
+                                您还未登录，去<a href="{% url 'login' %}?from={{ request.get_full_path }}">登录</a>
+                                <span>or</span>
+                                <a href="{% url 'register' %}">注册</a>
+                            {% endif %}
+                        </div>
+
+                    </div>
+                </form>
+            </div>
+            <div id="postcomments">
+                <div id="comments">
+                    <i class="fa fa-comments-o"></i> <b> ({{ num_of_people }})</b>个小伙伴在吐槽
+                </div>
+                <ol class="commentlist">
+                    {% for message in messages.object_list %}
+                    <li class="comment" id="comment_{{ message.id }}">
+                        <div class="c-avatar">
+                            <img src="{% static 'img/default.png' %}" class='avatar' height='54' width='54' />
+                            <div class="c-main">{{ message.message }}
+                                <div class="c-meta">
+                                    <span class="c-author">
+                                        <span rel='external nofollow' class='url'>{{ message.user.username }}</span>
+                                    </span>{{ message.created_time|date:'Y-m-d H:i' }}
+                                    <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ message.id }},{{ message.user.id }},'message')">回复</a>
+                                </div>
+                            </div>
+                        </div>
+                        <ul class="children">
+                        {% if message.has_child %}
+                            {% for child_message in message.get_children %}
+                                <li class="comment" id="comment_{{ child_message.id }}">
+                                    <div class="c-avatar">
+                                        <img src="{% static 'img/default.png' %}" class='avatar avatar-54 photo' height='54' width='54' />
+                                        <div class="c-main" id="div-comment-1764">{{ child_message.message }}
+                                            <div class="c-meta">
+                                                <span class="c-author">
+                                                    <span rel='external nofollow' class='url'>{{ child_message.user.username }}</span>
+                                                </span>{{ child_message.created_time|date:'Y-m-d H:i' }}
+                                                <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ child_message.id }},{{ child_message.user.id }},'message')" >回复</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        {% endif %}
+                        </ul>
+                    </li>
+                    {% empty %}
+                    {% endfor %}
+                </ol>
+                <div class="commentnav" >
+                    {% if messages.has_previous %}
+                    <a class="prev page-numbers" href="?{{ messages.previous_page_number.querystring }}">«</a>
+                    {% endif %}
+                    {% for page in messages.pages %}
+                        {% if page %}
+                            {% ifequal page messages.number %}
+                                <span aria-current='page' class='page-numbers current'>{{ page }}</span>
+                            {% else %}
+                                <a class='page-numbers' href='?{{ page.querystring }}'>{{ page }}</a>
+                            {% endifequal %}
+                        {% else %}
+                            <span class="page-numbers dots">&hellip;</span>
+                        {% endif %}
+                    {% empty %}
+                    {% endfor %}
+                    {% if messages.has_next %}
+                    <a class="next page-numbers" href="?{{ messages.next_page_number.querystring }}">»</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endblock %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+

@@ -1,0 +1,94 @@
+{% extends 'index.html' %}
+{% load staticfiles %}
+
+{% block title %}
+{{ name }}|念旧博客
+{% endblock %}
+
+{% block banner_img %}
+{% endblock %}
+
+{% block custom_bread %}
+    <header class="archive-header">
+        <h1>
+            <i class="iconfont icon-wenjianjia"></i>  &nbsp;分类：{{ name }}
+            <a title="{{ name }}" target="_blank" href="javascript:void(0)">
+                <i class="rss iconfont icon-wifi"></i>
+            </a>
+        </h1>
+    </header>
+    <div class="banner banner-sticky"></div>
+{% endblock %}
+
+{% block articles %}
+    {% for blog in blogs.object_list %}
+    <article class="excerpt">
+        <header>
+            <a class="label label-important" href="javascript:void(0)" onclick="goto_category({{ blog.category.id }},false)">{{ blog.category.name }}
+                <i class="label-arrow"></i>
+            </a>
+            <h2>
+                <a target="_blank" href="{% url 'blog_detail' blog.id %}" title="{{ blog.title }}">{{ blog.title }}</a>
+            </h2>
+        </header>
+        <div class="focus">
+            <a target="_blank" href="{% url 'blog_detail' blog.id %}">
+                <img class="thumb" src="{{ MEDIA_URL }}{{ blog.image }}" alt="{{ blog.title }}" />
+            </a>
+        </div>
+        <span class="note"> {{ blog.content|cut:'&nbsp;'|cut:'&ldquo;'|cut:'&rdquo;'|cut:'&gt;'|cut:'&lt;'|cut:'&mdash;'|striptags|truncatechars:200 }}...</span>
+        <p class="auth-span">
+            <span class="muted">
+                <i class="fa fa-clock-o"></i> {{ blog.created_time }}
+            </span>
+            <span class="muted">
+                <i class="fa fa-eye"></i> {{ blog.click_num }}℃
+            </span>
+            <span class="muted">
+                <i class="fa fa-comments-o"></i>
+                <a target="_blank" href="{% url 'blog_detail' blog.id %}#comments">{{ blog.get_comments_num }}评论</a>
+            </span>
+            <span class="muted">
+                <a href="javascript:;" data-action="ding" data-id="{{ blog.id }}" id="Addlike" class="action">
+                    <i class="fa fa-heart-o"></i><span class="count">{{ blog.like_num }}</span>喜欢</a>
+            </span>
+        </p>
+    </article>
+    {% empty %}
+    {% endfor %}
+    {% if blogs.object_list %}
+    <div class="pagination">
+        <ul>
+            {% if blogs.has_previous %}
+                <li class="prev-page">
+                    <a href="?{{ blogs.previous_page_number.querystring }}">上一页</a>
+                </li>
+            {% endif %}
+
+            {% for page in blogs.pages %}
+                {% if page %}
+                    {% ifequal page blogs.number %}
+                        <li class="active">
+                            <span>{{ page }}</span>
+                        </li>
+                    {% else %}
+                        <li>
+                            <span><a href="?{{ page.querystring }}">{{ page }}</a></span>
+                        </li>
+                    {% endifequal %}
+                {% else %}
+                    <li>
+                        <span> ... </span>
+                    </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if blogs.has_next %}
+            <li class="next-page">
+                <a href="?{{ blogs.next_page_number.querystring }}" >下一页</a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    {% endif %}
+{% endblock %}
