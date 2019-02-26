@@ -10,9 +10,9 @@ class CategoryAdmin(object):
 
 
 class MessageAdmin(object):
-    list_display = ['user', 'message', 'created_time', 'root', 'parent', 'reply_to_who']
-    search_fields = ['user', 'message', 'root', 'parent', 'reply_to_who']
-    list_filter = ['user', 'message', 'created_time', 'root', 'parent', 'reply_to_who']
+    list_display = ['user', 'message', 'created_time', 'parent']
+    search_fields = ['user', 'message', 'parent']
+    list_filter = ['user', 'message', 'created_time', 'parent']
 
 
 class NoticeAdmin(object):

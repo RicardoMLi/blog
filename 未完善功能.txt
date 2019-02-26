@@ -1,4 +1,1 @@
-1. 注册为检查用户名和邮箱是否被注册
-2. 留言只能显示两层,不能递归显示(可以使用django-mptt第三方插件)
-   https://django-mptt.readthedocs.io/en/latest/tutorial.html
-3. 评论未分页
+1. 评论以及留言未分页

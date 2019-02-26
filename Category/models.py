@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 class Category(models.Model):
@@ -21,24 +22,20 @@ class Category(models.Model):
         return self.name
 
 
-class Message(models.Model):
+class Message(MPTTModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='用户')
     message = models.TextField(verbose_name='留言内容')
     created_time = models.DateTimeField(auto_now_add=True, verbose_name='留言时间')
-
-    # 最顶层的那条留言,为了更好地筛选此评论的所有回复信息
-    root = models.ForeignKey('self', null=True, related_name='root_message', on_delete=models.CASCADE,
-                             verbose_name='顶层留言')
-    # 被回复的那条留言
-    parent = models.ForeignKey('self', null=True, related_name='parent_message', on_delete=models.CASCADE,
-                               verbose_name='被回复的留言')
-    # 被回复的那条留言的人
-    reply_to_who = models.ForeignKey(User, null=True, related_name='message_replies', on_delete=models.CASCADE,
-                                     verbose_name='被回复的人')
+    parent = TreeForeignKey('self', verbose_name='父节点', null=True, blank=True, related_name='children',
+                            on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = '留言管理'
         verbose_name_plural = verbose_name
+
+    class MPTTMeta:
+        parent_attr = 'parent'
+        order_insertion_by = ['-created_time']
 
     # 根据user去重
     def __eq__(self, other):
@@ -56,13 +53,13 @@ class Message(models.Model):
     def __str__(self):
         return self.message
 
-    # 判断本留言是否有回复
-    def has_child(self):
-        return Message.objects.filter(parent=self).exists()
-
-    # 返回本留言的所有回复
-    def get_children(self):
-        return Message.objects.filter(parent=self)
+    # # 判断本留言是否有回复
+    # def has_child(self):
+    #     return Message.objects.filter(parent=self).exists()
+    #
+    # # 返回本留言的所有回复
+    # def get_children(self):
+    #     return Message.objects.filter(parent=self)
 
 
 class Notice(models.Model):

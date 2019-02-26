@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load staticfiles %}
+{% load mptt_tags %}
 
 {% block custom_css %}
     <link rel="stylesheet" href="{% static 'css/share.css' %}">
@@ -110,62 +111,47 @@
                     <i class="fa fa-comments-o"></i> <b> ({{ num_of_people }})</b>个小伙伴在吐槽
                 </div>
                 <ol class="commentlist">
-                    {% for message in messages.object_list %}
-                    <li class="comment" id="comment_{{ message.id }}">
+                    {% recursetree messages %}
+                    <li class="comment" id="comment_{{ node.id }}">
                         <div class="c-avatar">
                             <img src="{% static 'img/default.png' %}" class='avatar' height='54' width='54' />
-                            <div class="c-main">{{ message.message }}
+                            <div class="c-main">{{ node.message }}
                                 <div class="c-meta">
                                     <span class="c-author">
-                                        <span rel='external nofollow' class='url'>{{ message.user.username }}</span>
-                                    </span>{{ message.created_time|date:'Y-m-d H:i' }}
-                                    <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ message.id }},{{ message.user.id }},'message')">回复</a>
+                                        <span rel='external nofollow' class='url'>{{ node.user.username }}</span>
+                                    </span>{{ node.created_time|date:'Y-m-d H:i' }}
+                                    <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ node.id }},{{ node.user.id }},'message')">回复</a>
                                 </div>
                             </div>
                         </div>
-                        <ul class="children">
-                        {% if message.has_child %}
-                            {% for child_message in message.get_children %}
-                                <li class="comment" id="comment_{{ child_message.id }}">
-                                    <div class="c-avatar">
-                                        <img src="{% static 'img/default.png' %}" class='avatar avatar-54 photo' height='54' width='54' />
-                                        <div class="c-main" id="div-comment-1764">{{ child_message.message }}
-                                            <div class="c-meta">
-                                                <span class="c-author">
-                                                    <span rel='external nofollow' class='url'>{{ child_message.user.username }}</span>
-                                                </span>{{ child_message.created_time|date:'Y-m-d H:i' }}
-                                                <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ child_message.id }},{{ child_message.user.id }},'message')" >回复</a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                            {% endfor %}
+                        {% if not node.is_leaf_node %}
+                            <ul class="children">
+                                {{ children }}
+                            </ul>
                         {% endif %}
-                        </ul>
                     </li>
-                    {% empty %}
-                    {% endfor %}
+                    {% endrecursetree %}
                 </ol>
-                <div class="commentnav" >
-                    {% if messages.has_previous %}
-                    <a class="prev page-numbers" href="?{{ messages.previous_page_number.querystring }}">«</a>
-                    {% endif %}
-                    {% for page in messages.pages %}
-                        {% if page %}
-                            {% ifequal page messages.number %}
-                                <span aria-current='page' class='page-numbers current'>{{ page }}</span>
-                            {% else %}
-                                <a class='page-numbers' href='?{{ page.querystring }}'>{{ page }}</a>
-                            {% endifequal %}
-                        {% else %}
-                            <span class="page-numbers dots">&hellip;</span>
-                        {% endif %}
-                    {% empty %}
-                    {% endfor %}
-                    {% if messages.has_next %}
-                    <a class="next page-numbers" href="?{{ messages.next_page_number.querystring }}">»</a>
-                    {% endif %}
-                </div>
+{#                <div class="commentnav" >#}
+{#                    {% if messages.has_previous %}#}
+{#                    <a class="prev page-numbers" href="?{{ messages.previous_page_number.querystring }}">«</a>#}
+{#                    {% endif %}#}
+{#                    {% for page in messages.pages %}#}
+{#                        {% if page %}#}
+{#                            {% ifequal page messages.number %}#}
+{#                                <span aria-current='page' class='page-numbers current'>{{ page }}</span>#}
+{#                            {% else %}#}
+{#                                <a class='page-numbers' href='?{{ page.querystring }}'>{{ page }}</a>#}
+{#                            {% endifequal %}#}
+{#                        {% else %}#}
+{#                            <span class="page-numbers dots">&hellip;</span>#}
+{#                        {% endif %}#}
+{#                    {% empty %}#}
+{#                    {% endfor %}#}
+{#                    {% if messages.has_next %}#}
+{#                    <a class="next page-numbers" href="?{{ messages.next_page_number.querystring }}">»</a>#}
+{#                    {% endif %}#}
+{#                </div>#}
             </div>
             {% endblock %}
         </div>

@@ -160,18 +160,17 @@ class MessageView(View):
     def get(self, request):
         context = {}
         notices = Notice.objects.all().order_by('index')
-        root_messages = Message.objects.filter(root=None).order_by('-created_time')
-        all_messages = Message.objects.all()
-        num_of_people = len(list(set(all_messages)))
+        messages = Message.objects.all()
+        num_of_people = len(list(set(messages)))
 
         # 分页
-        try:
-            page = request.GET.get('page', 1)
-        except PageNotAnInteger:
-            page = 1
-
-        p = Paginator(root_messages, 3, request=request)
-        messages = p.page(page)
+        # try:
+        #     page = request.GET.get('page', 1)
+        # except PageNotAnInteger:
+        #     page = 1
+        #
+        # p = Paginator(all_messages, 3, request=request)
+        # messages = p.page(page)
 
         context['messages'] = messages
         context['notices'] = notices
@@ -208,7 +207,6 @@ class MessageView(View):
             message.user = user[0]
             message.message = comment
             message.parent = None
-            message.reply_to_who = None
             message.save()
 
             # 多进程发送邮件
@@ -235,10 +233,9 @@ class MessageView(View):
                 return JsonResponse(return_data)
 
             current_user = User.objects.filter(id=int(current_user_id))
-            to_user = User.objects.filter(id=int(to_user_id))
             to_message = Message.objects.filter(id=int(to_message_id))
 
-            if not all((current_user, to_user, to_message)):
+            if not all((current_user, to_message)):
                 return_data['status'] = 'fail'
                 return_data['msg'] = '留言出错'
                 return JsonResponse(return_data)
@@ -247,7 +244,6 @@ class MessageView(View):
             message.user = current_user[0]
             message.message = comment
             message.parent = to_message[0]
-            message.reply_to_who = to_user[0]
             message.save()
 
             # 多进程发送邮件
