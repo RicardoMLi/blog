@@ -171,7 +171,7 @@ EMAIL_HOST = 'smtp.qq.com'
 EMAIL_PORT = 25
 EMAIL_HOST_USER = '508477625@qq.com'
 
-EMAIL_HOST_PASSWORD = 'kxvnieeszmusbiib'
+EMAIL_HOST_PASSWORD = 'efrglzqwjjwscbaa'
 EMAIL_SUBJECT_PREFIX = '博客'
 # 与SMTP服务器通信时，是否启用TLS连接(安全连接)
 EMAIL_USE_TLS = True
