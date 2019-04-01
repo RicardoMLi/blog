@@ -1026,7 +1026,8 @@ a.label-inverse:hover .label-arrow,a.badge-inverse:hover .label-arrow{border-lef
 .label-2{background-color:#6fc299}
 .label-3{background-color:#81c1f2}
 
-.mysidebar{position: fixed;border-radius: 5px;padding: 20px;right: 60px;bottom: 65px;border: solid 1px #ddd;z-index: 200;box-shadow: 0 0 16px 2px #ddd;width: 140px;height: 140px;background: #fff url(../img/timg.gif) no-repeat 16px 0;background-size: 120px 120px;}
+@media screen and (min-width: 800px) {  .mysidebar{position: fixed;border-radius: 5px;padding: 20px;right: 60px;bottom: 65px;border: solid 1px #ddd;z-index: 200;box-shadow: 0 0 16px 2px #ddd;width: 140px;height: 140px;background: #fff url(../img/timg.gif) no-repeat 16px 0;background-size: 120px 120px;}
+}
 
 .fenye{text-indent: 0px;text-align:center;margin:20px auto 10px;font-weight:bold}
 .fenye span{text-indent: 0px;border-radius: 2px;border: 1px solid #F6EBEB;padding:4px 12px 3px;color:#fff;display:inline-block;background-color:#5fbaac;margin:0 1px}
