@@ -20,7 +20,7 @@ from django.conf import settings
 from django.contrib.sitemaps.views import sitemap
 from django.conf.urls.static import static
 
-from .views import IndexView
+from .views import IndexView, LoveView
 from .feed import BlogFeedView
 from .sitemap import BlogSiteMap
 
@@ -40,6 +40,7 @@ urlpatterns = [
     path('category/',include('Category.urls'), name='category'),
     path('comment/',include('Comment.urls'), name='comment'),
     path('link/', include('Link.urls'), name='links'),
+    path('love/', LoveView.as_view(), name='love'),
     path('feed/', BlogFeedView(), name='feed'),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap')
 

@@ -1,4 +1,5 @@
 from django.views.generic import View
+from django.shortcuts import render
 from pure_pagination import Paginator, PageNotAnInteger
 
 from Blog.models import Banner
@@ -28,3 +29,10 @@ class IndexView(View):
         context['name'] = '首页'
         context['banners'] = Banner.objects.all().order_by('index')
         return render_template(request, 'index.html', context)
+
+
+class LoveView(View):
+
+    def get(self, request):
+
+        return render(request, 'love.html')
