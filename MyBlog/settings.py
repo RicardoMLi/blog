@@ -36,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sitemaps',
     'Blog.apps.BlogConfig',
     'Profile.apps.ProfileConfig',
     'Comment.apps.CommentConfig',
@@ -184,7 +185,11 @@ HAYSTACK_CONNECTIONS = {
     }
 }
 
-#自动生成索引
+# 自动生成索引
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
+# 每页评论数量
+PER_PAGE_COMMENTS = 5
 
+# 每页留言数量
+PER_PAGE_MESSAGES = 10

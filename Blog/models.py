@@ -43,6 +43,10 @@ class Blog(models.Model):
     def get_comments_num(self):
         return self.comment_set.all().count()
 
+    # 获取博客url
+    def get_absolute_url(self):
+        return '/blog/{0}'.format(self.id)
+
 
 class Banner(models.Model):
     index = models.IntegerField(verbose_name='轮播顺序')

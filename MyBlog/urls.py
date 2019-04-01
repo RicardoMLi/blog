@@ -17,9 +17,17 @@ import xadmin
 
 from django.urls import path, include
 from django.conf import settings
+from django.contrib.sitemaps.views import sitemap
 from django.conf.urls.static import static
 
 from .views import IndexView
+from .feed import BlogFeedView
+from .sitemap import BlogSiteMap
+
+
+sitemaps = {
+    'static': BlogSiteMap,
+}
 
 urlpatterns = [
     path('', IndexView.as_view(), name='index'),
@@ -31,7 +39,10 @@ urlpatterns = [
     path('blog/', include('Blog.urls'), name='blog'),
     path('category/',include('Category.urls'), name='category'),
     path('comment/',include('Comment.urls'), name='comment'),
-    path('link/', include('Link.urls'), name='links')
+    path('link/', include('Link.urls'), name='links'),
+    path('feed/', BlogFeedView(), name='feed'),
+    path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap')
+
 ]
 
 urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

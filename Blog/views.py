@@ -7,6 +7,7 @@ from .models import Blog, Tag
 
 from Comment.models import Comment
 from Category.models import Category
+from MyBlog.settings import PER_PAGE_COMMENTS
 from utils.RenderWrite import render_template
 
 
@@ -27,6 +28,19 @@ class BlogView(View):
 
         # 查找本篇博客评论
         blog_comments = Comment.objects.filter(blog_id=blog.id)
+        root_comments = [comment for comment in blog_comments if comment.is_root_node()]
+        comments = [node.get_descendants(include_self=True) for node in root_comments]
+
+        # 分页
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
+
+        p = Paginator(comments, PER_PAGE_COMMENTS, request=request)
+
+        page_comments = p.page(page)
+
         num_of_people = len(list(set(blog_comments)))
 
         # 查找父级标题
@@ -49,7 +63,7 @@ class BlogView(View):
         context = {
             'name': parent_category.name,
             'blog': blog,
-            'comments': blog_comments,
+            'comments': page_comments,
             'num_of_people': num_of_people,
             'pre_blog': pre_blog,
             'next_blog': next_blog

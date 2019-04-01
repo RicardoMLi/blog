@@ -1,1 +1,12 @@
 1. 评论以及留言未分页
+2. 做成链接效果 https://images0.cnblogs.com/blog2015/708426/201508/172356420975864.gif
+	        https://www.cnblogs.com/mxh1099/p/5627160.html
+
+3.评论分页实现:
+	1.查询所有该博客评论comments = Comment.objects.filter(blog_id=blog_id)
+	2.查询评论中的顶级评论root_comments = [comment for comment in comments if comment.is_root_node()]
+	3.将顶级评论分页page_comments = Pagination(root_comments)
+	4.查询顶级评论及其子评论page_comments = [node.get_descendants(include_self=True) for node in page_comments]
+	5.页面展示 {% for node in page_comments %} 
+					{% recursetree node %} ..... {% endrecursetree %}
+				{% endfor %}

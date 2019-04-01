@@ -7,6 +7,7 @@ from pure_pagination import Paginator, PageNotAnInteger, EmptyPage
 
 from Category.models import Category
 from Blog.models import Blog
+from MyBlog.settings import PER_PAGE_MESSAGES
 from utils.send_email import send_email
 from utils.RenderWrite import render_template
 from .models import Message, Notice
@@ -160,22 +161,25 @@ class MessageView(View):
     def get(self, request):
         context = {}
         notices = Notice.objects.all().order_by('index')
-        messages = Message.objects.all()
-        num_of_people = len(list(set(messages)))
+        all_messages = Message.objects.all()
+        root_messages = [message for message in all_messages if message.is_root_node()]
+        messages = [node.get_descendants(include_self=True) for node in root_messages]
+        num_of_people = len(list(set(all_messages)))
 
         # 分页
-        # try:
-        #     page = request.GET.get('page', 1)
-        # except PageNotAnInteger:
-        #     page = 1
-        #
-        # p = Paginator(all_messages, 3, request=request)
-        # messages = p.page(page)
+        try:
+            page = request.GET.get('page', 1)
+        except PageNotAnInteger:
+            page = 1
 
-        context['messages'] = messages
+        p = Paginator(messages, PER_PAGE_MESSAGES, request=request)
+        page_messages = p.page(page)
+
+        context['messages'] = page_messages
         context['notices'] = notices
         context['name'] = '留言交流'
         context['num_of_people'] = num_of_people
+
         return render_template(request, 'category/message.html', context)
 
     def post(self, request):

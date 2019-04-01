@@ -34,7 +34,7 @@
     <div class="pagewrapper clearfix">
         <aside class="pagesidebar">
             <ul class="pagesider-menu">
-                <li id="menu-item-3403" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/profile/' %}current-menu-item{% endif %} menu-item-3403"><a href="{% url 'about' %}">关于念旧</a></li>
+                <li id="menu-item-3403" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/profile/' or request.path == '/category/profile/' %}current-menu-item{% endif %} menu-item-3403"><a href="{% url 'about' %}">关于念旧</a></li>
                 <li id="menu-item-3403" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/blog/all_tags/' %}current-menu-item{% endif %} menu-item-3403"><a href="{% url 'all_tags' %}">标签云</a></li>
                 <li id="menu-item-3406" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/link/' %}current-menu-item{% endif %} menu-item-3406"><a href="{% url 'link' %}">友情链接</a></li>
                 <li id="menu-item-3407" class="menu-item menu-item-type-post_type menu-item-object-page {% if request.path == '/blog/history/' %}current-menu-item{% endif %} menu-item-3407"><a href="{% url 'history' %}">历史文章</a></li>
@@ -111,47 +111,49 @@
                     <i class="fa fa-comments-o"></i> <b> ({{ num_of_people }})</b>个小伙伴在吐槽
                 </div>
                 <ol class="commentlist">
-                    {% recursetree messages %}
-                    <li class="comment" id="comment_{{ node.id }}">
-                        <div class="c-avatar">
-                            <img src="{% static 'img/default.png' %}" class='avatar' height='54' width='54' />
-                            <div class="c-main">{{ node.message }}
-                                <div class="c-meta">
-                                    <span class="c-author">
-                                        <span rel='external nofollow' class='url'>{{ node.user.username }}</span>
-                                    </span>{{ node.created_time|date:'Y-m-d H:i' }}
-                                    <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ node.id }},{{ node.user.id }},'message')">回复</a>
+                    {% for message in messages.object_list %}
+                        {% recursetree message %}
+                        <li class="comment" id="comment_{{ node.id }}">
+                            <div class="c-avatar">
+                                <img src="{% static 'img/default.png' %}" class='avatar' height='54' width='54' />
+                                <div class="c-main">{{ node.message }}
+                                    <div class="c-meta">
+                                        <span class="c-author">
+                                            <span rel='external nofollow' class='url'>{{ node.user.username }}</span>
+                                        </span>{{ node.created_time|date:'Y-m-d H:i' }}
+                                        <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ node.id }},{{ node.user.id }},'message')">回复</a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        {% if not node.is_leaf_node %}
-                            <ul class="children">
-                                {{ children }}
-                            </ul>
-                        {% endif %}
-                    </li>
-                    {% endrecursetree %}
+                            {% if not node.is_leaf_node %}
+                                <ul class="children">
+                                    {{ children }}
+                                </ul>
+                            {% endif %}
+                        </li>
+                        {% endrecursetree %}
+                    {% endfor %}
                 </ol>
-{#                <div class="commentnav" >#}
-{#                    {% if messages.has_previous %}#}
-{#                    <a class="prev page-numbers" href="?{{ messages.previous_page_number.querystring }}">«</a>#}
-{#                    {% endif %}#}
-{#                    {% for page in messages.pages %}#}
-{#                        {% if page %}#}
-{#                            {% ifequal page messages.number %}#}
-{#                                <span aria-current='page' class='page-numbers current'>{{ page }}</span>#}
-{#                            {% else %}#}
-{#                                <a class='page-numbers' href='?{{ page.querystring }}'>{{ page }}</a>#}
-{#                            {% endifequal %}#}
-{#                        {% else %}#}
-{#                            <span class="page-numbers dots">&hellip;</span>#}
-{#                        {% endif %}#}
-{#                    {% empty %}#}
-{#                    {% endfor %}#}
-{#                    {% if messages.has_next %}#}
-{#                    <a class="next page-numbers" href="?{{ messages.next_page_number.querystring }}">»</a>#}
-{#                    {% endif %}#}
-{#                </div>#}
+                <div class="commentnav" >
+                    {% if messages.has_previous %}
+                    <a class="prev page-numbers" href="?{{ messages.previous_page_number.querystring }}">«</a>
+                    {% endif %}
+                    {% for page in messages.pages %}
+                        {% if page %}
+                            {% ifequal page messages.number %}
+                                <span aria-current='page' class='page-numbers current'>{{ page }}</span>
+                            {% else %}
+                                <a class='page-numbers' href='?{{ page.querystring }}'>{{ page }}</a>
+                            {% endifequal %}
+                        {% else %}
+                            <span class="page-numbers dots">&hellip;</span>
+                        {% endif %}
+                    {% empty %}
+                    {% endfor %}
+                    {% if messages.has_next %}
+                    <a class="next page-numbers" href="?{{ messages.next_page_number.querystring }}">»</a>
+                    {% endif %}
+                </div>
             </div>
             {% endblock %}
         </div>

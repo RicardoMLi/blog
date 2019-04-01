@@ -163,35 +163,37 @@
             <i class="fa fa-comments-o"></i> <b> ({{ num_of_people }})</b>个小伙伴在吐槽
         </div>
         <ul class="commentlist">
-            {% recursetree comments %}
-            <li class="comment" id="message_{{ node.id }}">
-                <div class="c-avatar">
-                    <img src="{% static 'img/default.png' %}" class='avatar' height='54' width='54' />
-                    <div class="c-main">{{ node.content }}
-                        <div class="c-meta">
-                            <span class="c-author">
-                                <span rel='external nofollow' class='url'>{{ node.user.username }}</span>
-                            </span>{{ node.created_time|date:'Y-m-d H:i' }}
-                            <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ node.id }},{{ node.user.id }},'comment')">回复</a>
+            {% for comment in comments.object_list %}
+                {% recursetree comment %}
+                <li class="comment" id="message_{{ node.id }}">
+                    <div class="c-avatar">
+                        <img src="{% static 'img/default.png' %}" class='avatar' height='54' width='54' />
+                        <div class="c-main">{{ node.content }}
+                            <div class="c-meta">
+                                <span class="c-author">
+                                    <span rel='external nofollow' class='url'>{{ node.user.username }}</span>
+                                </span>{{ node.created_time|date:'Y-m-d H:i' }}
+                                <a rel='nofollow' class='comment-reply-link' href="javascript:back_to_edit({{ node.id }},{{ node.user.id }},'comment')">回复</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% if not node.is_leaf_node %}
-                <ul class="children">
-                    {{ children }}
-                </ul>
-            {% endif %}
-            </li>
-            {% endrecursetree %}
+                {% if not node.is_leaf_node %}
+                    <ul class="children">
+                        {{ children }}
+                    </ul>
+                {% endif %}
+                </li>
+                {% endrecursetree %}
+            {% endfor %}
 
         </ul>
         <div class="commentnav" >
-            {% if messages.has_previous %}
-            <a class="prev page-numbers" href="?{{ messages.previous_page_number.querystring }}">«</a>
+            {% if comments.has_previous %}
+            <a class="prev page-numbers" href="?{{ comments.previous_page_number.querystring }}">«</a>
             {% endif %}
-            {% for page in messages.pages %}
+            {% for page in comments.pages %}
                 {% if page %}
-                    {% ifequal page messages.number %}
+                    {% ifequal page comments.number %}
                         <span aria-current='page' class='page-numbers current'>{{ page }}</span>
                     {% else %}
                         <a class='page-numbers' href='?{{ page.querystring }}'>{{ page }}</a>
@@ -200,8 +202,8 @@
                     <span class="page-numbers dots">&hellip;</span>
                 {% endif %}
             {% endfor %}
-            {% if messages.has_next %}
-            <a class="next page-numbers" href="?{{ messages.next_page_number.querystring }}">»</a>
+            {% if comments.has_next %}
+            <a class="next page-numbers" href="?{{ comments.next_page_number.querystring }}">»</a>
             {% endif %}
         </div>
     </div>
